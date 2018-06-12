@@ -14,11 +14,11 @@ class C extends React.Component<IProps> {
   }
 }
 
-export default connect<{}, DispatchProp<any>>(null)(C);
-
 /*
-  BUTTON COMPONENT
+  BUTTONS
 */
+
+export default connect<{}, DispatchProp<any>>(null)(C);
 
 interface IButtonProps {
   onClick: typeof Actions.updateUser;
