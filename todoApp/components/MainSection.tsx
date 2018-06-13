@@ -1,15 +1,16 @@
 import * as React from "react";
 import { ITodo } from "../rdc.todo";
 import TodoItem from "./TodoItem";
-import Footer from "./Footer";
+import Footer from "./footer";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
+import { deleteTodo, editTodo, addTodo } from "../act.todo";
+import { IState as IGlobalState } from "../rdc.todo";
+import Header from "./header";
 
 interface MainSectionProps {
   todos: ITodo[];
-  clearCompleted: () => void;
-  completeAll: () => void;
-  editTodo: (todo: ITodo, text: string) => void;
-  completeTodo: (todo: ITodo) => void;
-  deleteTodo: (todo: ITodo) => void;
+  dispatch: Dispatch<any>;
 }
 interface MainSectionState {
   filter: string;
@@ -24,7 +25,7 @@ class MainSection extends React.Component<MainSectionProps, MainSectionState> {
   handleClearCompleted() {
     const atLeastOneCompleted = this.props.todos.some(todo => todo.completed);
     if (atLeastOneCompleted) {
-      this.props.clearCompleted();
+      // this.props.clearCompleted();
     }
   }
 
@@ -33,14 +34,14 @@ class MainSection extends React.Component<MainSectionProps, MainSectionState> {
   }
 
   renderToggleAll(completedCount: number) {
-    const { todos, completeAll } = this.props;
+    const { todos } = this.props;
     if (todos.length > 0) {
       return (
         <input
           className="toggle-all"
           type="checkbox"
           checked={completedCount === todos.length}
-          onChange={() => completeAll()}
+          onChange={() => this.handleClearCompleted()}
         />
       );
     }
@@ -66,7 +67,7 @@ class MainSection extends React.Component<MainSectionProps, MainSectionState> {
   }
 
   render() {
-    const { todos, completeTodo, deleteTodo, editTodo } = this.props;
+    const { todos, dispatch } = this.props;
 
     const completedCount = todos.reduce(
       (count: number, todo): number => (todo.completed ? count + 1 : count),
@@ -74,23 +75,29 @@ class MainSection extends React.Component<MainSectionProps, MainSectionState> {
     );
 
     return (
-      <section className="main">
-        {this.renderToggleAll(completedCount)}
-        <ul className="todo-list">
-          {todos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              editTodo={editTodo}
-              completeTodo={completeTodo}
-              deleteTodo={deleteTodo}
-            />
-          ))}
-        </ul>
-        {this.renderFooter(completedCount)}
-      </section>
+      <div>
+        <Header addTodo={(text: string) => dispatch(addTodo(text))} />
+        <section className="main">
+          {this.renderToggleAll(completedCount)}
+          <ul className="todo-list">
+            {todos.map(todo => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                deleteTodo={(t: ITodo) => dispatch(deleteTodo(t))}
+                editTodo={(t, s) => dispatch(editTodo(t, s))}
+              />
+            ))}
+          </ul>
+          {/*this.renderFooter(completedCount)*/}
+        </section>
+      </div>
     );
   }
 }
 
-export default MainSection;
+const mapStateToProps = (state: IGlobalState) => ({
+  todos: state.todoList
+});
+
+export default connect(mapStateToProps)(MainSection);

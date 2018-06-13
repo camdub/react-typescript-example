@@ -36,20 +36,20 @@ export default (state: IState = initialState, action: Actions): IState => {
           todo => todo.id !== action.payload.todo.id
         )
       };
-    // case "EDIT_TODO":
-    //   const newList = state.todoList.map(todoItem => {
-    //     if (todoItem.id === action.payload.todo.id) {
-    //       return {
-    //         ...todoItem,
-    //         text: action.payload.todo.text
-    //       };
-    //     }
-    //     return todoItem;
-    //   });
-    //   return {
-    //     ...state,
-    //     todoList: newList
-    //   };
+    case "EDIT_TODO":
+      const newList = state.todoList.map(todoItem => {
+        if (todoItem.id === action.payload.todo.id) {
+          return {
+            ...todoItem,
+            text: action.payload.todo.text
+          };
+        }
+        return todoItem;
+      });
+      return {
+        ...state,
+        todoList: newList
+      };
     // case "COMPLETE_TODO":
     // return state;
     default:
