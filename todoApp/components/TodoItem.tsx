@@ -3,19 +3,18 @@ import * as classNames from "classnames";
 import { ITodo } from "../rdc.todo";
 import TodoTextInput from "./TodoTextInput";
 
-interface TodoItemProps {
+interface TodoItemProp {
   todo: ITodo;
-  editTodo: (todo: ITodo, text: string) => void;
   deleteTodo: (todo: ITodo) => void;
-  completeTodo: (todo: ITodo) => void;
-  key?: any;
+  editTodo: (todo: ITodo, text: string) => void;
+  key: any;
 }
 interface TodoItemState {
   editing: boolean;
 }
 
-class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
-  constructor(props: TodoItemProps, context: any) {
+class TodoItem extends React.Component<TodoItemProp, TodoItemState> {
+  constructor(props: TodoItemProp, context: any) {
     super(props, context);
     this.state = {
       editing: false
@@ -28,15 +27,13 @@ class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
 
   handleSave(todo: ITodo, text: string) {
     if (text.length === 0) {
-      this.props.deleteTodo(todo);
-    } else {
-      this.props.editTodo(todo, text);
+      this.props.deleteTodo && this.props.deleteTodo(todo);
     }
     this.setState({ editing: false });
   }
 
   render() {
-    const { todo, completeTodo, deleteTodo } = this.props;
+    const { todo, deleteTodo } = this.props;
 
     let element;
     if (this.state.editing) {
@@ -50,16 +47,14 @@ class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
     } else {
       element = (
         <div className="view">
-          <input
-            className="toggle"
-            type="checkbox"
-            checked={todo.completed}
-            onChange={() => completeTodo(todo)}
-          />
+          <input className="toggle" type="checkbox" checked={todo.completed} />
           <label onDoubleClick={this.handleDoubleClick.bind(this)}>
             {todo.text}
           </label>
-          <button className="destroy" onClick={() => deleteTodo(todo)} />
+          <button
+            className="destroy"
+            onClick={() => deleteTodo && deleteTodo(todo)}
+          />
         </div>
       );
     }
